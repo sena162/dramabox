@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"/><title>DramaBox - Arama</title>
+<link rel="stylesheet" href="../css/style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+.search-page{padding:32px;max-width:1200px;margin:0 auto}
+.search-bar-big{display:flex;align-items:center;background:var(--bg2);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:14px 24px;gap:12px;margin-bottom:28px;transition:border-color .2s}
+.search-bar-big:focus-within{border-color:var(--accent)}
+.search-bar-big input{background:none;border:none;color:var(--text);font-size:18px;font-family:'DM Sans',sans-serif;outline:none;flex:1}
+.search-bar-big input::placeholder{color:var(--muted)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filter-btn{background:var(--bg3);border:0.5px solid rgba(255,255,255,.08);color:var(--muted);padding:7px 16px;border-radius:14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s}
+.filter-btn.active{background:var(--accent);color:#1a1400;border-color:var(--accent)}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:18px}
+.result-card{cursor:pointer;transition:transform .2s}
+.result-card:hover{transform:translateY(-4px)}
+.result-poster{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--bg3);margin-bottom:8px;position:relative}
+.result-poster img{width:100%;height:100%;object-fit:cover}
+.result-rating{position:absolute;top:8px;right:8px;background:rgba(10,10,15,.85);color:var(--accent);font-size:11px;font-weight:600;padding:3px 8px;border-radius:8px}
+.result-title{font-size:13px;font-weight:600;margin-bottom:3px;line-height:1.3}
+.result-meta{font-size:11px;color:var(--muted)}
+.loading-dots{display:flex;gap:6px;justify-content:center;padding:60px}
+.loading-dots span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bounce 1s infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-8px);opacity:1}}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:18px}
+</style></head><body>
+<nav class="navbar">
+<a href="../index.html" class="logo">Drama<span>Box</span></a>
+<ul class="nav-links"><li><a href="../index.html">Ana Sayfa</a></li><li><a href="search.html" class="active">Arama</a></li></ul>
+<div class="nav-right"><a href="auth.html" class="btn-premium">Giris Yap</a></div>
+</nav>
+<main class="search-page">
+<div class="search-bar-big">
+<span style="font-size:20px">🔍</span>
+<input type="text" id="search-input" placeholder="Dizi, film veya oyuncu ara..." autofocus/>
+</div>
+<div class="filter-row">
+<button class="filter-btn active" data-type="multi">Tumu</button>
+<button class="filter-btn" data-type="tv">Diziler</button>
+<button class="filter-btn" data-type="movie">Filmler</button>
+<button class="filter-btn" data-lang="ko">🇰🇷 K-Drama</button>
+<button class="filter-btn" data-lang="zh">🇨🇳 C-Drama</button>
+<button class="filter-btn" data-lang="ja">🇯🇵 J-Drama</button>
+<button class="filter-btn" data-lang="th">🇹🇭 Thai</button>
+<button class="filter-btn" data-lang="tr">🇹🇷 Turk</button>
+</div>
+<div id="results-container">
+<h2 class="section-title">🔥 Populer K-Drama</h2>
+<div class="results-grid" id="trending-grid"></div>
+</div>
+</main>
+<script src="../js/config.js"></script>
+<script>
+let timer=null,currentType='multi',currentLang='';
+async function loadTrending(){
+try{const d=await apiFetch('/trending/tv/week',{with_original_language:'ko'});renderGrid('trending-grid',d.results,'tv');}catch(e){}
+}
+function renderGrid(id,items,type){
+const g=document.getElementById(id);if(!g)return;
+if(!items||!items.length){g.innerHTML='<p style="color:var(--muted)">Sonuc bulunamadi.</p>';return;}
+g.innerHTML=items.map(i=>{
+const title=i.title||i.name||'--';
+const year=(i.release_date||i.first_air_date||'').slice(0,4);
+const rating=i.vote_average?i.vote_average.toFixed(1):'--';
+const mt=i.media_type||type;
+return '<div class="result-card" onclick="location.href='detail.html?id='+i.id+'&type='+mt+''"><div class="result-poster">'+(i.poster_path?'<img src="'+posterUrl(i.poster_path)+'" loading="lazy"/>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:40px">🎬</div>')+'<div class="result-rating">★ '+rating+'</div></div><div class="result-title">'+title+'</div><div class="result-meta">'+(mt==='movie'?'Film':'Dizi')+(year?' · '+year:'')+'</div></div>';
+}).join('');
+}
+async function doSearch(q){
+const c=document.getElementById('results-container');
+if(!q.trim()){c.innerHTML='<h2 class="section-title">🔥 Populer K-Drama</h2><div class="results-grid" id="trending-grid"></div>';loadTrending();return;}
+c.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div>';
+try{
+const p={};if(currentLang)p.with_original_language=currentLang;
+const d=await apiFetch('/search/'+currentType,{query:q,...p});
+if(!d.results||!d.results.length){c.innerHTML='<p style="color:var(--muted);padding:40px 0;text-align:center">Sonuc bulunamadi: "'+q+'"</p>';return;}
+c.innerHTML='<div class="results-grid" id="search-grid"></div>';
+renderGrid('search-grid',d.results,currentType==='movie'?'movie':'tv');
+}catch(e){c.innerHTML='<p style="color:var(--muted)">Hata: '+e.message+'</p>';}
+}
+document.getElementById('search-input').addEventListener('input',e=>{clearTimeout(timer);timer=setTimeout(()=>doSearch(e.target.value),400);});
+const urlQ=new URLSearchParams(location.search).get('q');
+const urlL=new URLSearchParams(location.search).get('lang');
+if(urlL){currentLang=urlL;document.querySelector('[data-lang="'+urlL+'"]')?.classList.add('active');}
+if(urlQ){document.getElementById('search-input').value=urlQ;doSearch(urlQ);}else{loadTrending();}
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+if(btn.dataset.type){document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentType=btn.dataset.type;}
+if(btn.dataset.lang!==undefined){document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));currentLang=currentLang===btn.dataset.lang?'':btn.dataset.lang;if(currentLang)btn.classList.add('active');}
+const q=document.getElementById('search-input').value;if(q)doSearch(q);else loadTrending();
+});
+});
+</script></body></html>

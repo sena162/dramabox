@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"/><title>DramaBox - Giris</title>
+<link rel="stylesheet" href="../css/style.css"/>
+<link rel="stylesheet" href="../css/auth.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+</head><body>
+<nav class="navbar"><a href="../index.html" class="logo">Drama<span>Box</span></a></nav>
+<main class="auth-page">
+<div class="auth-bg"><div class="auth-bg-tiles" id="bg-tiles"></div><div class="auth-bg-gradient"></div></div>
+<div class="auth-card">
+<div class="auth-tabs">
+<button class="auth-tab active" onclick="switchTab('login')">Giris Yap</button>
+<button class="auth-tab" onclick="switchTab('register')">Kayit Ol</button>
+</div>
+<div id="form-login">
+<h2 class="auth-title">Tekrar Hos Geldin</h2>
+<p class="auth-sub">Hesabina giris yap.</p>
+<div class="form-group"><label>E-posta</label><input type="email" placeholder="ornek@eposta.com" id="login-email"/></div>
+<div class="form-group"><label>Sifre</label><input type="password" placeholder="••••••••" id="login-pass"/></div>
+<div class="auth-forgot"><a href="#">Sifremi unuttum</a></div>
+<button class="btn-auth" onclick="handleLogin()">Giris Yap</button>
+<p class="auth-switch">Hesabin yok mu? <a href="#" onclick="switchTab('register')">Kayit Ol</a></p>
+</div>
+<div id="form-register" style="display:none">
+<h2 class="auth-title">Hesap Olustur</h2>
+<p class="auth-sub">Ucretsiz uye ol.</p>
+<div class="form-row">
+<div class="form-group"><label>Ad</label><input type="text" placeholder="Adin"/></div>
+<div class="form-group"><label>Soyad</label><input type="text" placeholder="Soyadın"/></div>
+</div>
+<div class="form-group"><label>E-posta</label><input type="email" placeholder="ornek@eposta.com"/></div>
+<div class="form-group"><label>Sifre</label><input type="password" placeholder="En az 8 karakter"/></div>
+<button class="btn-auth" onclick="handleRegister()">Kayit Ol</button>
+<p class="auth-switch">Hesabin var mi? <a href="#" onclick="switchTab('login')">Giris Yap</a></p>
+</div>
+</div></main>
+<script src="../js/config.js"></script>
+<script>
+const colors=['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'];
+const tiles=document.getElementById('bg-tiles');
+for(let i=0;i<20;i++){const d=document.createElement('div');d.className='bg-tile '+colors[i%colors.length];tiles.appendChild(d);}
+function switchTab(t){
+document.getElementById('form-login').style.display=t==='login'?'':'none';
+document.getElementById('form-register').style.display=t==='register'?'':'none';
+document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('active',(t==='login'&&i===0)||(t==='register'&&i===1)));
+}
+function handleLogin(){const e=document.getElementById('login-email').value,p=document.getElementById('login-pass').value;if(!e||!p){alert('Lutfen tum alanlari doldurun.');return;}localStorage.setItem('db_user',JSON.stringify({email:e}));window.location.href='../index.html';}
+function handleRegister(){alert('Kayit basarili!');switchTab('login');}
+</script></body></html>

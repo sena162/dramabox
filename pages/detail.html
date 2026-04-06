@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark"><head><meta charset="UTF-8"/><title>DramaBox - Detay</title>
+<link rel="stylesheet" href="../css/style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+[data-theme=light]{--bg:#f5f3ee;--bg2:#eceae4;--bg3:#e0ddd6;--text:#1a1a26;--muted:#6b6a78}
+.detail-backdrop{position:relative;height:480px;display:flex;align-items:flex-end;padding:48px 40px;overflow:hidden}
+.backdrop-img{position:absolute;inset:0;background-size:cover;background-position:center top}
+.backdrop-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,15,.95) 40%,rgba(10,10,15,.3) 75%,transparent 100%),linear-gradient(0deg,rgba(10,10,15,1) 0%,transparent 60%)}
+.detail-hero{position:relative;z-index:2;display:flex;gap:32px;align-items:flex-end;max-width:1100px;width:100%}
+.detail-poster{width:160px;height:240px;flex-shrink:0;border-radius:12px;overflow:hidden;border:2px solid rgba(232,201,122,.3)}
+.detail-poster img{width:100%;height:100%;object-fit:cover}
+.detail-badge{display:inline-flex;align-items:center;background:rgba(232,201,122,.15);border:0.5px solid rgba(232,201,122,.4);color:var(--accent);font-size:11px;font-weight:600;padding:4px 12px;border-radius:10px;margin-bottom:12px;text-transform:uppercase;letter-spacing:.8px}
+.detail-title{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;line-height:1.1;margin-bottom:10px;color:#f0eee8}
+.detail-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(240,238,232,.7);margin-bottom:12px;align-items:center}
+.detail-rating{color:var(--accent);font-weight:700;font-size:15px}
+.genre-pill{background:rgba(255,255,255,.08);border:0.5px solid rgba(255,255,255,.15);color:rgba(240,238,232,.8);padding:4px 12px;border-radius:10px;font-size:12px}
+.detail-actions{display:flex;gap:10px;margin-top:12px}
+.btn-watch{display:flex;align-items:center;gap:8px;background:var(--accent);color:#1a1400;border:none;border-radius:24px;padding:12px 24px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-list{background:rgba(255,255,255,.1);border:0.5px solid rgba(255,255,255,.2);color:#f0eee8;border-radius:24px;padding:12px 20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.detail-content{max-width:1100px;margin:0 auto;padding:40px}
+.sec-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:16px;margin-top:36px}
+.overview-text{font-size:15px;line-height:1.75;color:var(--muted);max-width:760px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+.stat-box{background:var(--bg2);border:0.5px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--accent)}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.cast-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.cast-card{flex:0 0 90px;text-align:center}
+.cast-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 8px;background:var(--bg3)}
+.cast-avatar img{width:100%;height:100%;object-fit:cover}
+.cast-name{font-size:11px;font-weight:600;line-height:1.3}
+.cast-char{font-size:10px;color:var(--muted);margin-top:2px}
+.ep-item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:0.5px solid rgba(255,255,255,.06);cursor:pointer}
+.ep-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--accent);min-width:32px;text-align:center}
+.ep-thumb{width:110px;height:62px;border-radius:8px;background:var(--bg3);flex-shrink:0;overflow:hidden}
+.ep-thumb img{width:100%;height:100%;object-fit:cover}
+.ep-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.ep-date{font-size:12px;color:var(--muted)}
+.review-card{background:var(--bg2);border:0.5px solid rgba(255,255,255,.08);border-radius:12px;padding:20px;margin-bottom:14px}
+.review-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.review-avatar{width:40px;height:40px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--accent)}
+.review-name{font-size:14px;font-weight:600}
+.review-rating{font-size:12px;color:var(--accent)}
+.review-content{font-size:13px;line-height:1.7;color:var(--muted)}
+@keyframes shimmer{0%,100%{opacity:.4}50%{opacity:.8}}
+</style></head><body>
+<nav class="navbar">
+<a href="../index.html" class="logo">Drama<span>Box</span></a>
+<ul class="nav-links"><li><a href="../index.html">Ana Sayfa</a></li><li><a href="search.html">Arama</a></li></ul>
+<div class="nav-right">
+<button onclick="toggleTheme()" id="theme-btn" style="background:var(--bg3);border:0.5px solid rgba(255,255,255,.12);color:var(--text);padding:8px 14px;border-radius:20px;font-size:16px;cursor:pointer">☀️</button>
+<a href="auth.html" class="btn-premium">Giris Yap</a>
+</div>
+</nav>
+<div class="detail-backdrop">
+<div class="backdrop-img" id="backdrop-img"></div>
+<div class="backdrop-overlay"></div>
+<div class="detail-hero">
+<div class="detail-poster" id="detail-poster"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;background:var(--bg3)">🎬</div></div>
+<div id="detail-info"><div style="background:var(--bg3);width:120px;height:22px;border-radius:6px;margin-bottom:12px;animation:shimmer 1.5s infinite"></div><div style="background:var(--bg3);width:280px;height:40px;border-radius:6px;margin-bottom:10px;animation:shimmer 1.5s infinite"></div></div>
+</div>
+</div>
+<div class="detail-content">
+<h3 class="sec-title">Ozet</h3>
+<p class="overview-text" id="overview-text">Yukleniyor...</p>
+<div class="stats-row" id="stats-row"></div>
+<h3 class="sec-title">Oyuncular</h3>
+<div class="cast-row" id="cast-row"><p style="color:var(--muted);font-size:13px">Yukleniyor...</p></div>
+<div id="episodes-section" style="display:none">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:36px;margin-bottom:16px">
+<h3 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Bolumler</h3>
+<select id="season-select" style="background:var(--bg3);border:0.5px solid rgba(255,255,255,.12);color:var(--text);padding:6px 12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer"></select>
+</div>
+<div id="episodes-list"></div>
+</div>
+<h3 class="sec-title">Yorumlar</h3>
+<div id="reviews-list"><p style="color:var(--muted);font-size:13px">Yukleniyor...</p></div>
+</div>
+<script src="../js/config.js"></script>
+<script>
+const params=new URLSearchParams(location.search),id=params.get('id'),type=params.get('type')||'tv';
+function toggleTheme(){const h=document.documentElement,d=h.dataset.theme==='dark';h.dataset.theme=d?'light':'dark';document.getElementById('theme-btn').textContent=d?'🌙':'☀️';}
+async function loadDetail(){
+if(!id)return;
+try{
+const data=await apiFetch('/'+type+'/'+id,{append_to_response:'credits,reviews'});
+if(data.backdrop_path)document.getElementById('backdrop-img').style.backgroundImage='url('+backdropUrl(data.backdrop_path)+')';
+const poster=document.getElementById('detail-poster');
+poster.innerHTML=data.poster_path?'<img src="'+posterUrl(data.poster_path)+'" style="width:100%;height:100%;object-fit:cover"/>':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;background:var(--bg3)">🎬</div>';
+const title=data.title||data.name||'--';
+const year=(data.release_date||data.first_air_date||'').slice(0,4);
+const rating=data.vote_average?data.vote_average.toFixed(1):'--';
+const genres=(data.genres||[]).map(g=>'<span class="genre-pill">'+g.name+'</span>').join('');
+document.title='DramaBox - '+title;
+document.getElementById('detail-info').innerHTML='<div class="detail-badge">'+(type==='movie'?'Film':'Dizi')+'</div><h1 class="detail-title">'+title+'</h1><div class="detail-meta"><span class="detail-rating">★ '+rating+'</span><span>·</span><span>'+year+'</span>'+(data.number_of_episodes?'<span>·</span><span>'+data.number_of_episodes+' Bolum</span>':'')+'</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">'+genres+'</div><div class="detail-actions"><button class="btn-watch">▶ Simdi Izle</button><button class="btn-list">+ Listem</button></div>';
+document.getElementById('overview-text').textContent=data.overview||'Turkce ozet bulunmuyor.';
+const s=type==='tv'?[{num:data.number_of_seasons||'--',lbl:'Sezon'},{num:data.number_of_episodes||'--',lbl:'Bolum'},{num:rating,lbl:'Puan'},{num:data.vote_count?data.vote_count.toLocaleString():'--',lbl:'Oy'}]:[{num:formatRuntime(data.runtime),lbl:'Sure'},{num:rating,lbl:'Puan'},{num:data.vote_count?data.vote_count.toLocaleString():'--',lbl:'Oy'},{num:year,lbl:'Yil'}];
+document.getElementById('stats-row').innerHTML=s.map(x=>'<div class="stat-box"><div class="stat-num">'+x.num+'</div><div class="stat-lbl">'+x.lbl+'</div></div>').join('');
+const cast=(data.credits?.cast||[]).slice(0,12);
+document.getElementById('cast-row').innerHTML=cast.length?cast.map(c=>'<div class="cast-card"><div class="cast-avatar">'+(c.profile_path?'<img src="'+profileUrl(c.profile_path)+'" loading="lazy"/>':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px">👤</div>')+'</div><div class="cast-name">'+c.name+'</div><div class="cast-char">'+(c.character||'')+'</div></div>').join(''):'<p style="color:var(--muted);font-size:13px">Oyuncu bilgisi yok.</p>';
+if(type==='tv'&&data.seasons){
+const sec=document.getElementById('episodes-section');sec.style.display='';
+const sel=document.getElementById('season-select');
+const real=data.seasons.filter(s=>s.season_number>0);
+sel.innerHTML=real.map(s=>'<option value="'+s.season_number+'">Sezon '+s.season_number+' ('+s.episode_count+' bolum)</option>').join('');
+loadEpisodes(id,real[0]?.season_number||1);
+sel.addEventListener('change',()=>loadEpisodes(id,sel.value));
+}
+const reviews=(data.reviews?.results||[]).slice(0,5);
+document.getElementById('reviews-list').innerHTML=reviews.length?reviews.map(r=>'<div class="review-card"><div class="review-header"><div class="review-avatar">'+r.author.charAt(0).toUpperCase()+'</div><div><div class="review-name">'+r.author+'</div><div class="review-rating">'+(r.author_details?.rating?'★ '+r.author_details.rating:'')+'</div></div></div><div class="review-content">'+r.content.slice(0,400)+(r.content.length>400?'...':'')+'</div></div>').join(''):'<p style="color:var(--muted);font-size:13px">Henuz yorum yapilmamis.</p>';
+}catch(e){console.error(e);document.getElementById('detail-info').innerHTML='<p style="color:var(--accent2)">Hata olustu.</p>';}
+}
+async function loadEpisodes(showId,seasonNum){
+const list=document.getElementById('episodes-list');
+list.innerHTML='<p style="color:var(--muted);padding:20px 0;font-size:13px">Yukleniyor...</p>';
+try{const d=await apiFetch('/tv/'+showId+'/season/'+seasonNum);
+list.innerHTML=(d.episodes||[]).map(ep=>'<div class="ep-item"><div class="ep-num">'+ep.episode_number+'</div><div class="ep-thumb">'+(ep.still_path?'<img src="'+posterUrl(ep.still_path,'w300')+'" loading="lazy"/>':'')+'</div><div class="ep-info"><div class="ep-title">'+(ep.name||'Bolum '+ep.episode_number)+'</div><div class="ep-date">'+formatDate(ep.air_date)+' · '+formatRuntime(ep.runtime)+'</div></div><div style="color:var(--accent);font-size:13px;font-weight:600">'+(ep.vote_average?'★ '+ep.vote_average.toFixed(1):'')+'</div></div>').join('');
+}catch(e){list.innerHTML='<p style="color:var(--muted)">Bolumler yuklenemedi.</p>';}
+}
+loadDetail();
+</script></body></html>
